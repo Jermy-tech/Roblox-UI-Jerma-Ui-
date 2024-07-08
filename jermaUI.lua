@@ -1,11 +1,17 @@
 local Library = {};
+print("Debug: Library Init)
 local Font_Old = Enum.Font.GothamBold
+print("Debug: Old Font Init)
 local Path = game:GetService("RunService"):IsStudio() and game.Players.LocalPlayer.PlayerGui or game.CoreGui
+print("Debug: Path Init)
 local Tick = tick() 
+print("Debug: Tick Init)
 
 repeat wait() until game:IsLoaded(); 
+print("Debug: Game Loaded)
 
 local Tick = tick()
+print("Debug: Tick Redifined)
 
 -- Custom Fonts
 do 
@@ -27,9 +33,11 @@ do
 	writefile("menu_font.font", game:GetService("HttpService"):JSONEncode(smallest_pixel))
 
 	getgenv().menu_font = Font.new(getcustomasset("menu_font.font"), Enum.FontWeight.Regular)
-end; 
+end;
+print("Debug: Font Init)
 
 do -- Library
+	print("Debug: Library Loading...)
 	Library = {
 		Open = true;
 		Accent = Color3.fromRGB(132, 108, 188);
@@ -4047,3 +4055,5 @@ do
 		return notification
 	end
 end
+
+print("Debug: Library Initied)
