@@ -4059,6 +4059,69 @@ end
 
 print("Debug: Library Initied")
 
+-- Initialize the UI library (adjust path as needed)
+local Library = require(game.ReplicatedStorage.UI.Library)
+
+-- Create the main window
+local Window = Library:Window({Title = "Game UI", Size = Vector2.new(500, 400)})
+
+-- Create pages
+local Tabs = {
+    ["LocalPlayer"] = Window:Page({Name = "LocalPlayer", Icon = "rbxassetid://..."}),
+    ["Visuals"] = Window:Page({Name = "Visuals", Icon = "rbxassetid://..."}),
+    ["Combat"] = Window:Page({Name = "Combat", Icon = "rbxassetid://..."}),
+    ["Fun"] = Window:Page({Name = "Fun", Icon = "rbxassetid://..."}),
+    ["Settings"] = Window:Page({Name = "Settings", Icon = "rbxassetid://..."})
+}
+
+-- Add tweaks for LocalPlayer in the LocalPlayer tab (example sliders)
+local LocalPlayerSection = Tabs["LocalPlayer"]:Section({Name = "Player Tweaks", Side = "Left"})
+LocalPlayerSection:Slider({
+    Name = "Walkspeed",
+    Flag = "Walkspeed",
+    Min = 0,
+    Max = 100,
+    Default = 16,
+    Callback = function(value)
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
+    end
+})
+LocalPlayerSection:Slider({
+    Name = "JumpPower",
+    Flag = "JumpPower",
+    Min = 0,
+    Max = 250,
+    Default = 50,
+    Callback = function(value)
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = value
+    end
+})
+
+-- Add the camlock toggle and keybind to the Combat tab
+local CombatSection = Tabs["Combat"]:Section({Name = "Combat Options", Side = "Left"})
+local CamlockEnabled = false
+local Keybind = Enum.KeyCode.E -- Set your desired keybind
+
+local function toggleCamlock()
+    CamlockEnabled = not CamlockEnabled
+end
+
+CombatSection:Toggle({
+    Name = "Camlock",
+    Flag = "CamlockEnabled",
+    Callback = toggleCamlock
+})
+
+CombatSection:Keybind({
+    Name = "Toggle Keybind",
+    Flag = "CamlockToggleKeybind",
+    Default = Keybind,
+    Callback = function()
+        toggleCamlock()
+    end
+})
+
+-- RunService connection for camlock functionality
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -4066,13 +4129,9 @@ local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 
-local AimbotEnabled = false
 local Smoothness = 0.2
 local AimPart = "Head"
 local FOV = 100
-local KeybindToggle = Enum.KeyCode.E
-local KeybindTurnOff = Enum.KeyCode.F -- Add a keybind to turn off CamLock
-
 local PredictionMultiplier = 0.2
 
 local CurrentTarget = nil
@@ -4131,26 +4190,8 @@ local function updateTarget()
     end
 end
 
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed then
-        -- Toggle CamLock on/off with KeybindToggle
-        if input.KeyCode == KeybindToggle then
-            AimbotEnabled = not AimbotEnabled
-            if not AimbotEnabled then
-                CurrentTarget = nil
-            end
-        end
-
-        -- Turn off CamLock with KeybindTurnOff
-        if input.KeyCode == KeybindTurnOff then
-            AimbotEnabled = false
-            CurrentTarget = nil
-        end
-    end
-end)
-
 RunService.RenderStepped:Connect(function()
-    if AimbotEnabled then
+    if CamlockEnabled then
         updateTarget()
         if CurrentTarget and CurrentTarget.Character and CurrentTarget.Character:FindFirstChild(AimPart) then
             local targetPart = CurrentTarget.Character[AimPart]
@@ -4161,6 +4202,3 @@ RunService.RenderStepped:Connect(function()
         CurrentTarget = nil
     end
 end)
-
--- Return AimbotEnabled status for toggling in UI
-return AimbotEnabled
