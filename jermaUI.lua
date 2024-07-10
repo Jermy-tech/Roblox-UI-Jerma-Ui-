@@ -4059,9 +4059,6 @@ end
 
 print("Debug: Library Initied")
 
--- Initialize the UI library (adjust path as needed)
-local Library = require(game.ReplicatedStorage.UI.Library)
-
 -- Create the main window
 local Window = Library:Window({Title = "Game UI", Size = Vector2.new(500, 400)})
 
